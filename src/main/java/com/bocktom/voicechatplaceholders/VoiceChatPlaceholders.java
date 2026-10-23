@@ -1,5 +1,7 @@
 package com.bocktom.voicechatplaceholders;
 
+import com.github.Anon8281.universalScheduler.UniversalScheduler;
+import com.github.Anon8281.universalScheduler.scheduling.schedulers.TaskScheduler;
 import de.maxhenkel.voicechat.api.BukkitVoicechatService;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -12,10 +14,19 @@ import java.util.UUID;
 public final class VoiceChatPlaceholders extends JavaPlugin implements CommandExecutor {
 
 	public static VoiceChatPlaceholders plugin;
+	private static TaskScheduler scheduler;
 	private VoiceChatPlaceholdersPlugin voicechatPlugin;
+
+	@NotNull
+	public static TaskScheduler getScheduler() {
+		return scheduler;
+	}
 
 	@Override
 	public void onEnable() {
+		// must be ready before anything else schedules a task
+		scheduler = UniversalScheduler.getScheduler(this);
+
 		plugin = this;
 
 		saveDefaultConfig();
@@ -38,6 +49,14 @@ public final class VoiceChatPlaceholders extends JavaPlugin implements CommandEx
 		}
 
 		getCommand("vcp").setExecutor(this);
+	}
+
+	@Override
+	public void onDisable() {
+		if (scheduler != null) {
+			scheduler.cancelTasks();
+			scheduler = null;
+		}
 	}
 
 	public String getStatusPlaceholder(UUID uniqueId) {

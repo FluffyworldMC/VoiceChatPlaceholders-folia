@@ -2,11 +2,9 @@ package com.bocktom.voicechatplaceholders;
 
 import de.maxhenkel.voicechat.api.*;
 import de.maxhenkel.voicechat.api.events.*;
-import org.bukkit.Bukkit;
 
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 import static org.bukkit.Bukkit.getLogger;
 
@@ -44,13 +42,13 @@ public class VoiceChatPlaceholdersPlugin implements VoicechatPlugin {
 		api = (VoicechatServerApi) voicechatApi;
 
 		// This only walks a ConcurrentHashMap - no block, no entity, no world.
-		// So it does not belong on a region thread at all. The async scheduler
-		// exists on both Paper and Folia, so no version check is needed, and the
-		// server cancels the task for us when the plugin is disabled.
-		Bukkit.getAsyncScheduler().runAtFixedRate(plugin, task -> {
+		// So it does not belong on a region thread at all. runTaskTimerAsynchronously
+		// maps to the async scheduler on every platform (Bukkit, Paper and Folia),
+		// so no version check is needed, and cancelTasks() on disable stops it.
+		VoiceChatPlaceholders.getScheduler().runTaskTimerAsynchronously(() -> {
 			long now = System.currentTimeMillis();
 			LAST_PACKET.entrySet().removeIf(e -> now - e.getValue().timestamp() > 10_000);
-		}, 10L, 10L, TimeUnit.SECONDS);
+		}, 200L, 200L);
 	}
 
 

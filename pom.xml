@@ -46,6 +46,22 @@
                         <goals>
                             <goal>shade</goal>
                         </goals>
+                        <configuration>
+                            <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <artifactSet>
+                                <includes>
+                                    <include>com.github.Anon8281:UniversalScheduler</include>
+                                </includes>
+                            </artifactSet>
+                            <relocations>
+                                <!-- shaded so another plugin bundling the same
+                                     library cannot clash with ours -->
+                                <relocation>
+                                    <pattern>com.github.Anon8281.universalScheduler</pattern>
+                                    <shadedPattern>com.bocktom.voicechatplaceholders.universalScheduler</shadedPattern>
+                                </relocation>
+                            </relocations>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -115,6 +131,10 @@
             <id>placeholderapi</id>
             <url>https://repo.extendedclip.com/releases/</url>
         </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -135,6 +155,14 @@
             <artifactId>placeholderapi</artifactId>
             <version>2.11.6</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- Picks the region scheduler on Folia/Canvas, the Paper scheduler on
+             Paper and the Bukkit one everywhere else. Shaded below. -->
+        <dependency>
+            <groupId>com.github.Anon8281</groupId>
+            <artifactId>UniversalScheduler</artifactId>
+            <version>0.1.7</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
